@@ -1,0 +1,240 @@
+openapi: "3.0.2"
+info:
+  title: LMS REST API
+  version: "1.0"
+servers:
+  - url: https://api.server.test/v1
+tags:
+  - name: Server
+  - name: Players
+  - name: Playlists
+  - name: Syncgroup
+  - name: Library
+  
+components:
+  parameters:
+    playerid:
+      name: playerid
+      in: path
+      required: true
+      description: "The ID of a player"
+      schema:
+        type: string
+    playable:
+      name: playable
+      in: path
+      required: true
+      description: "An url, playlist or directory content that represents playaable items"
+      schema:
+        type: string
+    playlistaction:
+      name: playlistaction
+      in: query
+      required: true
+      description: "Specifying a position/action to put into a playlist"
+      schema:
+        type: string
+        enum:
+          - add
+          - insert
+          - delete
+          - move
+
+paths:
+  /library/tracks:
+    get:
+      tags: 
+      - Library
+      description: "Get a list of tracks that match the query"
+      responses:
+        '200':
+          description: OK
+  /library/albums:
+      get:
+        tags:
+          - Library
+        description: "Get a list of albums that match the query"
+        responses:
+          '200':
+            description: OK
+  /library/playlists:
+      get:
+        tags:
+          - Library
+        description: "Get a list of playlists that match the query"
+        responses:
+          '200':
+            description: OK  
+  /syncgroup:
+    get:
+      tags:
+        - Syncgroup
+      description: "Gets the players in a syncgroup"
+      responses:
+        "200":
+          description: OK
+  /playlists/{playerid}:
+    get:
+      parameters:
+        - "$ref": "#/components/parameters/playerid"
+      tags:
+        - Playlists
+      description: "Get the details of a players playlist"
+      responses:
+        "200":
+          description: OK
+  /server:
+    get:
+      tags:
+        - Server
+      description: "Get details of the LMS server"
+      responses:
+        "200":
+          description: OK
+  /server/status:
+    post:
+      tags:
+        - Server
+      parameters:
+        - name: action
+          in: query
+          description: "Indicate a stop or restart of the server"
+          schema:
+            type: string
+            enum:
+              - stop
+              - restart
+      description: "Stop or Restart the server"
+      responses:
+        "200":
+          description: OK
+
+  /players:
+    get:
+      tags:
+        - Players
+      description: "Returns a list of players"
+      responses:
+        "200":
+          description: OK
+  /players/{playerid}:
+    get:
+      parameters:
+        - "$ref": "#/components/parameters/playerid"
+      tags:
+        - Players
+      description: "Returns details about a connected player"
+      responses:
+        "200":
+          description: OK
+
+  /players/{playerid}/status:
+    get:
+      parameters:
+        - "$ref": "#/components/parameters/playerid"
+      tags:
+        - Players
+      description: "Get the status of the current player"
+      responses:
+        "200":
+          description: OK
+    post:
+      parameters:
+        - "$ref": "#/components/parameters/playerid"
+      tags:
+        - Players
+      description: "Change the status of a player"
+      responses:
+        "200":
+          description: OK
+  /players/{playerid}/play-status:
+    get:
+      parameters:
+        - "$ref": "#/components/parameters/playerid"
+      tags:
+        - Players
+      description: "Get's the current play status of the player (playing, stopped etc.)"
+      responses:
+        "200":
+          description: OK
+    post:
+      parameters:
+        - "$ref": "#/components/parameters/playerid"
+        - name: action
+          in: query
+          description: "the play action"
+          schema:
+            type: string
+            enum:
+              - play
+              - stop
+              - pause
+      tags:
+        - Players
+      description: "Set the current play status of the player"
+      responses:
+        "200":
+          description: OK
+  /players/{playerid}/song:
+    get:
+      parameters:
+        - "$ref": "#/components/parameters/playerid"
+      tags:
+        - Players
+      description: "Get information about the currenlty playing song"
+      responses:
+        "200":
+          description: OK
+  /players/{playerid}/playlist:
+    get:
+      parameters:
+        - "$ref": "#/components/parameters/playerid"
+      tags:
+        - Players
+      description: "Get's the content of the current playlist for the player"
+      responses:
+        "200":
+          description: OK
+    put:
+      parameters:
+        - "$ref": "#/components/parameters/playerid"
+        - name: playable
+          in: query
+          required: false
+          description: "An url, playlist or directory content that represents playable items"
+          schema:
+            type: string
+        - "$ref": "#/components/parameters/playlistaction"
+        - name: index
+          in: query
+          required: false
+          description: "An index in a playlist"
+          schema:
+            type: integer
+      description: "Places the given playable into the players playlist in the positin specified in action"
+      tags:
+        - Players
+      responses:
+        "200":
+          description: OK
+    delete:
+      parameters:
+        - "$ref": "#/components/parameters/playerid"
+      description: "Delete and clear the playlist for the player"
+      tags:
+        - Players
+      responses:
+        "200":
+          description: OK
+  /players/{playerid}/playlist/{playable}:
+    post:
+      parameters:
+        - "$ref": "#/components/parameters/playerid"
+        - "$ref": "#/components/parameters/playable"
+      tags:
+        - Players
+      description: "Set's the current playlist to the value set in playable, which can be an url, directory or playlist"
+      responses:
+        "200":
+          description: OK
+  
