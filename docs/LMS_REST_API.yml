@@ -10,6 +10,7 @@ tags:
   - name: Playlists
   - name: Syncgroup
   - name: Library
+  - name: Browser
   
 components:
   parameters:
@@ -41,6 +42,30 @@ components:
           - move
 
 paths:
+  /browser/apps:
+    get:
+      tags:
+        - Browser
+      description: "Get the apps available to browse"
+      responses:
+        '200':
+          description: OK
+  /browser/radios:
+    get:
+      tags:
+        - Browser
+      description: "Get the Radio items available to browse"
+      responses:
+        '200':
+          description: OK
+  /browser/favorites:
+    get:
+      tags:
+        - Browser
+      description: "Get the browse items in favorites"
+      responses:
+        '200':
+          description: OK
   /library/tracks:
     get:
       tags: 
@@ -72,17 +97,7 @@ paths:
       description: "Gets the players in a syncgroup"
       responses:
         "200":
-          description: OK
-  /playlists/{playerid}:
-    get:
-      parameters:
-        - "$ref": "#/components/parameters/playerid"
-      tags:
-        - Playlists
-      description: "Get the details of a players playlist"
-      responses:
-        "200":
-          description: OK
+          description: OK  
   /server:
     get:
       tags:
