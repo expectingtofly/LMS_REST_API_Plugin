@@ -1,0 +1,2 @@
+PLUGIN_RESTAPI
+	EN	REST API for Logitech Media Server

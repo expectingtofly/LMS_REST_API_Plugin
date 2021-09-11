@@ -3,11 +3,10 @@ info:
   title: LMS REST API
   version: "1.0"
 servers:
-  - url: https://api.server.test/v1
+  - url: http://localhost:9000/RESTAPI/v1
 tags:
   - name: Server
-  - name: Players
-  - name: Playlists
+  - name: Players  
   - name: Syncgroup
   - name: Library
   - name: Browser
@@ -42,6 +41,14 @@ components:
           - move
 
 paths:
+  /browser:
+    post:
+      tags:
+        - Browser
+      description: "Post an action to the browser which returns the browse response"
+      responses:
+        '200':
+          description: OK
   /browser/apps:
     get:
       tags:
@@ -200,7 +207,7 @@ paths:
       responses:
         "200":
           description: OK
-  /players/{playerid}/playlist:
+  /players/{playerid}/queue:
     get:
       parameters:
         - "$ref": "#/components/parameters/playerid"
@@ -241,7 +248,7 @@ paths:
       responses:
         "200":
           description: OK
-  /players/{playerid}/playlist/{playable}:
+  /players/{playerid}/queue/{playable}:
     post:
       parameters:
         - "$ref": "#/components/parameters/playerid"

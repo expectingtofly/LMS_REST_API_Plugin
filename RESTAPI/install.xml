@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<extension>
+	<name>PLUGIN_RESTAPI</name>
+	<module>Plugins::RESTAPI::Plugin</module>
+	<version>0.0.8</version>
+	<description>PLUGIN_RESTAPI</description>
+	<creator>ExpectingToFly</creator>
+	<homepageURL>https://github.com/expectingtofly/LMS_REST_API_Plugin</homepageURL>	
+	<defaultState>enabled</defaultState>
+	<targetApplication>
+		<id>SlimServer</id>
+		<minVersion>8.2</minVersion>
+        <maxVersion>*</maxVersion>
+	</targetApplication>	
+</extension>
