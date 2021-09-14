@@ -39,7 +39,6 @@ components:
           - insert
           - delete
           - move
-
 paths:
   /browser:
     post:
@@ -149,7 +148,8 @@ paths:
       responses:
         "200":
           description: OK
-
+        "404":         
+          description: Not Found
   /players/{playerid}/status:
     get:
       parameters:
@@ -160,6 +160,8 @@ paths:
       responses:
         "200":
           description: OK
+        "404":         
+          description: Not Found
     post:
       parameters:
         - "$ref": "#/components/parameters/playerid"
@@ -169,6 +171,8 @@ paths:
       responses:
         "200":
           description: OK
+        "404":         
+          description: Not Found
   /players/{playerid}/play-status:
     get:
       parameters:
