@@ -24,6 +24,7 @@ use JSON::XS::VersionOneAndTwo;
 
 # HTTP Response Codes .  Only the ones we need rather than import the whole of HTTP::Status
 use constant HTTP_OK                    => 200;
+use constant HTTP_BAD_REQUEST           => 400;
 use constant HTTP_NOT_FOUND             => 404;
 use constant HTTP_METHOD_NOT_ALLOWED    => 405;
 use constant HTTP_INTERNAL_SERVER_ERROR => 500;
@@ -50,6 +51,16 @@ sub encodeErrorMessageJSON {
      return $json;
 }
 
+sub encodeSuccessJSON {
+     my ($message) = @_;
+
+     my $data = {
+         status => $message
+     };
+
+     my $json = encode_json($data);
+     return $json;
+}
 1;
 
 

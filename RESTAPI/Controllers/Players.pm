@@ -33,8 +33,7 @@ my $log = logger('plugin.RESTAPI');
 sub getPlayers {
 	my ($action, $input, $callback) = @_;
 
-	if ( my @players = Slim::Player::Client::clients() ) {
-		main::DEBUGLOG && $log->is_debug && $log->debug("The Players :"  . Dumper(@players));
+	if ( my @players = Slim::Player::Client::clients() ) {		
 
 		my $data = [];
 

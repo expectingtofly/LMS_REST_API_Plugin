@@ -23,6 +23,7 @@ use Slim::Utils::Log;
 use Slim::Player::Client;
 
 use Data::Dumper;
+use JSON::XS::VersionOneAndTwo;
 
 use Plugins::RESTAPI::Utilities;
 
@@ -35,7 +36,7 @@ sub getDetails {
 
 	my $playerId = $action->{'playerid'};
 
-	if ( my $player = Slim::Player::Client::getClient($playerId) ) {		
+	if ( my $player = Slim::Player::Client::getClient($playerId) ) {
 
 		my $data = 	{
 			playerID    => $player->id,
@@ -58,23 +59,22 @@ sub getDetails {
 	return;
 }
 
+
 sub getStatus {
 	my ($action, $input, $callback) = @_;
 
 	my $playerId = $action->{'playerid'};
 
-	if ( my $player = Slim::Player::Client::getClient($playerId) ) {		
+	if ( my $player = Slim::Player::Client::getClient($playerId) ) {
 
 		my $power = '';
 		if ( $player->power() ) {
 			$power = 'on';
 		} else {
-			$power = 'off'
+			$power = 'off';
 		}
 
-		my $data = 	{
-			powerStatus    => $power,
-		};
+		my $data = 	{powerStatus    => $power,};
 
 		my $json = Plugins::RESTAPI::Utilities::encodeReturnJSON($data);
 		$callback->(Plugins::RESTAPI::Utilities::HTTP_OK, $json);
@@ -89,13 +89,41 @@ sub getStatus {
 	return;
 }
 
+
 sub setStatus {
 	my ($action, $input, $callback) = @_;
-	
+
+	my $playerId = $action->{'playerid'};
+
+	if ( my $player = Slim::Player::Client::getClient($playerId) ) {
+
+		my $validInput = 1;
+		my $jsonInput = eval { decode_json($input) };
+		if ($@) {
+			$validInput = 0;
+		}
+
+		if ( $validInput && $jsonInput->{powerStatus} && (($jsonInput->{powerStatus} eq 'on') || ($jsonInput->{powerStatus} eq 'off')) ) {
+
+			$player->power(($jsonInput->{powerStatus} eq 'on'));
+			$callback->(Plugins::RESTAPI::Utilities::HTTP_OK, Plugins::RESTAPI::Utilities::encodeSuccessJSON('ok'));
+
+		} else {
+
+			my $json = Plugins::RESTAPI::Utilities::encodeErrorMessageJSON("Invalid input");
+			$callback->(Plugins::RESTAPI::Utilities::HTTP_BAD_REQUEST, $json);
+
+		}
+	} else {
+
+		my $json = Plugins::RESTAPI::Utilities::encodeErrorMessageJSON("Player '$playerId' not found");
+		$callback->(Plugins::RESTAPI::Utilities::HTTP_NOT_FOUND, $json);
+
+	}
+
 
 	return;
 }
-
 
 
 1;
