@@ -39,6 +39,13 @@ components:
           - insert
           - delete
           - move
+    appid:
+      name: appid
+      in: path
+      required: true
+      description: "The ID of an app"
+      schema:
+        type: string
 paths:
   /browser:
     post:
@@ -53,6 +60,16 @@ paths:
       tags:
         - Browser
       description: "Get the apps available to browse"
+      responses:
+        '200':
+          description: OK
+  /browser/apps/{appid}:
+    get:
+      parameters:
+        - "$ref": "#/components/parameters/appid"
+      tags:
+        - Browser
+      description: "Browse an apps feed"
       responses:
         '200':
           description: OK
