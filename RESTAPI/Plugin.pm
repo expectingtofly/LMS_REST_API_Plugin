@@ -63,7 +63,7 @@ my %controllerMap = (
 sub initPlugin {
 	my $class = shift;
 
-	Slim::Web::Pages->addRawFunction('restapi/', \&handleRESTCall);
+	Slim::Web::Pages->addRawFunction('api/', \&handleRESTCall);
 
 	return;
 }
@@ -76,7 +76,7 @@ sub handleRESTCall {
 
 	#Extract the route
 	my $path = $req->uri->path;
-	$path =~ s/^\/restapi//;
+	$path =~ s/^\/api//;
 	
 	#set up the PSGI type $env that the router requires
 	my $env = {

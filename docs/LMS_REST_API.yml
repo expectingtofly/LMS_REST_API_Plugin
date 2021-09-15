@@ -3,7 +3,7 @@ info:
   title: LMS REST API
   version: "1.0"
 servers:
-  - url: http://localhost:9000/RESTAPI/v1
+  - url: http://localhost:9000/api/v1
 tags:
   - name: Server
   - name: Players  
@@ -24,7 +24,7 @@ components:
       name: playable
       in: path
       required: true
-      description: "An url, playlist or directory content that represents playaable items"
+      description: "An url, playlist or directory content that represents playable items"
       schema:
         type: string
     playlistaction:
@@ -53,16 +53,16 @@ paths:
         - Browser
       description: "Post an action to the browser which returns the browse response"
       responses:
-        '200':
-          description: OK
+        "405":
+          description: Not Implemented
   /browser/apps:
     get:
       tags:
         - Browser
       description: "Get the apps available to browse"
       responses:
-        '200':
-          description: OK
+        "405":
+          description: Not Implemented
   /browser/apps/{appid}:
     get:
       parameters:
@@ -71,64 +71,64 @@ paths:
         - Browser
       description: "Browse an apps feed"
       responses:
-        '200':
-          description: OK
+        "405":
+          description: Not Implemented
   /browser/radios:
     get:
       tags:
         - Browser
       description: "Get the Radio items available to browse"
       responses:
-        '200':
-          description: OK
+        '405':
+          description: Not Implemented
   /browser/favorites:
     get:
       tags:
         - Browser
       description: "Get the browse items in favorites"
       responses:
-        '200':
-          description: OK
+        '405':
+          description: Not Implemented
   /library/tracks:
     get:
       tags: 
       - Library
       description: "Get a list of tracks that match the query"
       responses:
-        '200':
-          description: OK
+        '405':
+          description: Not Implemented
   /library/albums:
       get:
         tags:
           - Library
         description: "Get a list of albums that match the query"
         responses:
-          '200':
-            description: OK
+          "405":
+            description: Not Implemented
   /library/playlists:
       get:
         tags:
           - Library
         description: "Get a list of playlists that match the query"
         responses:
-          '200':
-            description: OK  
+          "405":
+            description: Not Implemented
   /syncgroup:
     get:
       tags:
         - Syncgroup
       description: "Gets the players in a syncgroup"
       responses:
-        "200":
-          description: OK  
+         "405":
+          description: Not Implemented 
   /server:
     get:
       tags:
         - Server
       description: "Get details of the LMS server"
       responses:
-        "200":
-          description: OK
+         "405":
+          description: Not Implemented
   /server/status:
     post:
       tags:
@@ -144,8 +144,8 @@ paths:
               - restart
       description: "Stop or Restart the server"
       responses:
-        "200":
-          description: OK
+         "405":
+          description: Not Implemented
 
   /players:
     get:
@@ -198,8 +198,8 @@ paths:
         - Players
       description: "Get's the current play status of the player (playing, stopped etc.)"
       responses:
-        "200":
-          description: OK
+         "405":
+          description: Not Implemented
     post:
       parameters:
         - "$ref": "#/components/parameters/playerid"
@@ -216,8 +216,8 @@ paths:
         - Players
       description: "Set the current play status of the player"
       responses:
-        "200":
-          description: OK
+         "405":
+          description: Not Implemented
   /players/{playerid}/song:
     get:
       parameters:
@@ -226,8 +226,8 @@ paths:
         - Players
       description: "Get information about the currenlty playing song"
       responses:
-        "200":
-          description: OK
+         "405":
+          description: Not Implemented
   /players/{playerid}/queue:
     get:
       parameters:
@@ -236,8 +236,8 @@ paths:
         - Players
       description: "Get's the content of the current playlist for the player"
       responses:
-        "200":
-          description: OK
+         "405":
+          description: Not Implemented
     put:
       parameters:
         - "$ref": "#/components/parameters/playerid"
@@ -258,8 +258,8 @@ paths:
       tags:
         - Players
       responses:
-        "200":
-          description: OK
+         "405":
+          description: Not Implemented
     delete:
       parameters:
         - "$ref": "#/components/parameters/playerid"
@@ -267,8 +267,8 @@ paths:
       tags:
         - Players
       responses:
-        "200":
-          description: OK
+         "405":
+          description: Not Implemented
   /players/{playerid}/queue/{playable}:
     post:
       parameters:
@@ -278,6 +278,6 @@ paths:
         - Players
       description: "Set's the current playlist to the value set in playable, which can be an url, directory or playlist"
       responses:
-        "200":
-          description: OK
+         "405":
+          description: Not Implemented
   
