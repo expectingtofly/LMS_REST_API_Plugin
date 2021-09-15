@@ -3,7 +3,7 @@ info:
   title: LMS REST API
   version: "1.0"
 servers:
-  - url: http://localhost:9000/RESTAPI/v1
+  - url: http://localhost:9000/api/v1
 tags:
   - name: Server
   - name: Players  
