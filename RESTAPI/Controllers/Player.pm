@@ -43,7 +43,7 @@ sub getDetails {
 			name        => $player->name,
 			model       => $player->modelName,
 			ip          => $player->ipport,
-			uuid        => $player->uuid,
+			uuid        => $player->uuid
 		};
 
 		my $json = Plugins::RESTAPI::Utilities::encodeReturnJSON($data);
@@ -74,7 +74,7 @@ sub getStatus {
 			$power = 'off';
 		}
 
-		my $data = 	{powerStatus    => $power,};
+		my $data = 	{powerStatus    => $power};
 
 		my $json = Plugins::RESTAPI::Utilities::encodeReturnJSON($data);
 		$callback->(Plugins::RESTAPI::Utilities::HTTP_OK, $json);
@@ -103,7 +103,9 @@ sub setStatus {
 			$validInput = 0;
 		}
 
-		if ( $validInput && $jsonInput->{powerStatus} && (($jsonInput->{powerStatus} eq 'on') || ($jsonInput->{powerStatus} eq 'off')) ) {
+		if (   $validInput
+			&& $jsonInput->{powerStatus}
+			&& $jsonInput->{powerStatus} =~ /^on$|^off$/ ) {
 
 			$player->power(($jsonInput->{powerStatus} eq 'on'));
 			$callback->(Plugins::RESTAPI::Utilities::HTTP_OK, Plugins::RESTAPI::Utilities::encodeSuccessJSON('ok'));
@@ -125,5 +127,84 @@ sub setStatus {
 	return;
 }
 
+
+sub getPlayStatus {
+	my ($action, $input, $callback) = @_;
+
+	my $playerId = $action->{'playerid'};
+
+	if ( my $player = Slim::Player::Client::getClient($playerId) ) {
+
+		my $playStatus = 'Unknown';
+		if ( $player->isPlaying() ) {
+			$playStatus = 'playing';
+		} elsif ( $player->isPaused() ) {
+			$playStatus = 'paused';
+		} elsif ( $player->isStopped() ) {
+			$playStatus = 'stopped';
+		} elsif ( $player->isRetrying() ) {
+			$playStatus = 'retrying';
+		}
+
+		my $data = 	{playStatus    => $playStatus};
+
+		my $json = Plugins::RESTAPI::Utilities::encodeReturnJSON($data);
+		$callback->(Plugins::RESTAPI::Utilities::HTTP_OK, $json);
+
+	} else {
+
+		my $json = Plugins::RESTAPI::Utilities::encodeErrorMessageJSON("Player '$playerId' not found");
+		$callback->(Plugins::RESTAPI::Utilities::HTTP_NOT_FOUND, $json);
+
+	}
+
+	return;
+}
+
+
+sub setPlayStatus {
+	my ($action, $input, $callback) = @_;
+
+	my $playerId = $action->{'playerid'};
+
+	if ( my $player = Slim::Player::Client::getClient($playerId) ) {
+
+		my $validInput = 1;
+		my $jsonInput = eval { decode_json($input) };
+		if ($@) {
+			$validInput = 0;
+		}
+
+		if (   $validInput
+			&& $jsonInput->{playStatus}
+			&& $jsonInput->{playStatus} =~ /^playing$|^paused$|^stopped$/ ) {
+
+			my $controlVerb = '';
+			$controlVerb ='play' if ( $jsonInput->{playStatus} eq 'playing' );
+			$controlVerb ='pause' if ( $jsonInput->{playStatus} eq 'paused' );
+			$controlVerb ='stop' if ( $jsonInput->{playStatus} eq 'stopped' );
+
+			if (Plugins::RESTAPI::Utilities::executeControlDispatch($player->id, [$controlVerb]) ) {
+				$callback->(Plugins::RESTAPI::Utilities::HTTP_OK, Plugins::RESTAPI::Utilities::encodeSuccessJSON('ok'));
+			} else {
+				my $json =  Plugins::RESTAPI::Utilities::encodeErrorMessageJSON('Set Play Status Failed');
+				$callback->(Plugins::RESTAPI::Utilities::HTTP_INTERNAL_SERVER_ERROR, $json );
+			}
+
+		} else {
+
+			my $json = Plugins::RESTAPI::Utilities::encodeErrorMessageJSON("Invalid input");
+			$callback->(Plugins::RESTAPI::Utilities::HTTP_BAD_REQUEST, $json);
+
+		}
+	} else {
+
+		my $json = Plugins::RESTAPI::Utilities::encodeErrorMessageJSON("Player '$playerId' not found");
+		$callback->(Plugins::RESTAPI::Utilities::HTTP_NOT_FOUND, $json);
+
+	}
+
+	return;
+}
 
 1;

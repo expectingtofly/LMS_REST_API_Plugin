@@ -44,7 +44,7 @@ sub getPlayers {
 				name        => $player->name,
 				model       => $player->modelName,
 				ip          => $player->ipport,
-				uuid        => $player->uuid,
+				uuid        => $player->uuid
 			  };
 		}
 
