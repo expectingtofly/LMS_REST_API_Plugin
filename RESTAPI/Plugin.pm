@@ -49,12 +49,14 @@ $router->connect( '/players/{playerid}/play-status', { controller => 'player', a
 
 my %controllerMap = (
 	'players' => {
-		'getPlayers' 	=> \&Plugins::RESTAPI::Controllers::Players::getPlayers,
+		'getPlayers' 		=> \&Plugins::RESTAPI::Controllers::Players::getPlayers,
 	},
 	'player' => {
-		'getDetails' 	=> \&Plugins::RESTAPI::Controllers::Player::getDetails,
-		'getStatus' 	=> \&Plugins::RESTAPI::Controllers::Player::getStatus,
-		'setStatus' 	=> \&Plugins::RESTAPI::Controllers::Player::setStatus,
+		'getDetails' 		=> \&Plugins::RESTAPI::Controllers::Player::getDetails,
+		'getStatus' 		=> \&Plugins::RESTAPI::Controllers::Player::getStatus,
+		'setStatus' 		=> \&Plugins::RESTAPI::Controllers::Player::setStatus,
+		'getPlayStatus' 	=> \&Plugins::RESTAPI::Controllers::Player::getPlayStatus,
+		'setPlayStatus' 	=> \&Plugins::RESTAPI::Controllers::Player::setPlayStatus,
 	}
 
 );
@@ -77,7 +79,7 @@ sub handleRESTCall {
 	#Extract the route
 	my $path = $req->uri->path;
 	$path =~ s/^\/api//;
-	
+
 	#set up the PSGI type $env that the router requires
 	my $env = {
 		'REQUEST_METHOD' => $req->method,
@@ -100,22 +102,28 @@ sub handleRESTCall {
 
 				Plugins::RESTAPI::Plugin::writeRESTResponse( $httpClient, $httpResponse, Plugins::RESTAPI::Utilities::HTTP_OK, $body );
 			};
-						
+
 			#call the controller operation
-			$controllerSub->( $match, $req->content(), $cb );
-		} else {
+			eval { $controllerSub->( $match, $req->content(), $cb ) };
+			if ($@) {
 
-			my $json =  Plugins::RESTAPI::Utilities::encodeErrorMessageJSON('Not yet implemented');
-			Plugins::RESTAPI::Plugin::writeRESTResponse($httpClient, $httpResponse, Plugins::RESTAPI::Utilities::HTTP_METHOD_NOT_ALLOWED, $json );
-		}
+				# The controller fell over for some unknown reason
+				my $json =  Plugins::RESTAPI::Utilities::encodeErrorMessageJSON('Internal System Error');
+				Plugins::RESTAPI::Plugin::writeRESTResponse($httpClient, $httpResponse, Plugins::RESTAPI::Utilities::HTTP_INTERNAL_SERVER_ERROR, $json );
+			}
 	} else {
-		main::DEBUGLOG && $log->is_debug && $log->debug("Route NOT Matched : $path ");
 
-		my $json =  Plugins::RESTAPI::Utilities::encodeErrorMessageJSON('No such operation');
-		Plugins::RESTAPI::Plugin::writeRESTResponse( $httpClient, $httpResponse, Plugins::RESTAPI::Utilities::HTTP_NOT_FOUND, $json );
+		my $json =  Plugins::RESTAPI::Utilities::encodeErrorMessageJSON('Not yet implemented');
+		Plugins::RESTAPI::Plugin::writeRESTResponse($httpClient, $httpResponse, Plugins::RESTAPI::Utilities::HTTP_METHOD_NOT_ALLOWED, $json );
 	}
+} else {
+	main::DEBUGLOG && $log->is_debug && $log->debug("Route NOT Matched : $path ");
 
-	return;
+	my $json =  Plugins::RESTAPI::Utilities::encodeErrorMessageJSON('No such operation');
+	Plugins::RESTAPI::Plugin::writeRESTResponse( $httpClient, $httpResponse, Plugins::RESTAPI::Utilities::HTTP_NOT_FOUND, $json );
+}
+
+return;
 }
 
 

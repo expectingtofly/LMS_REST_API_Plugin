@@ -22,6 +22,11 @@ use strict;
 
 use JSON::XS::VersionOneAndTwo;
 
+use Slim::Utils::Log;
+use Slim::Control::Request;
+
+my $log = logger('plugin.RESTAPI');
+
 # HTTP Response Codes .  Only the ones we need rather than import the whole of HTTP::Status
 use constant HTTP_OK                    => 200;
 use constant HTTP_BAD_REQUEST           => 400;
@@ -29,37 +34,49 @@ use constant HTTP_NOT_FOUND             => 404;
 use constant HTTP_METHOD_NOT_ALLOWED    => 405;
 use constant HTTP_INTERNAL_SERVER_ERROR => 500;
 
+
 sub encodeReturnJSON {
-     my ($returnData) = @_;
+	my ($returnData) = @_;
 
-     my $data = {
-         data => $returnData
-     };
+	my $data = {data => $returnData};
 
-     my $json = encode_json($data);
-     return $json;
+	my $json = encode_json($data);
+	return $json;
 }
+
 
 sub encodeErrorMessageJSON {
-     my ($error) = @_;
+	my ($error) = @_;
 
-     my $data = {
-         errorMessage => $error
-     };
+	my $data = {errorMessage => $error};
 
-     my $json = encode_json($data);
-     return $json;
+	my $json = encode_json($data);
+	return $json;
 }
 
+
 sub encodeSuccessJSON {
-     my ($message) = @_;
+	my ($message) = @_;
 
-     my $data = {
-         status => $message
-     };
+	my $data = {status => $message};
 
-     my $json = encode_json($data);
-     return $json;
+	my $json = encode_json($data);
+	return $json;
+}
+
+
+sub executeControlDispatch {
+	my ($clientId, $verbArray) = @_;
+
+	my $request = Slim::Control::Request->new($clientId, $verbArray);
+	$request->execute();
+	if ( $request->isStatusError() ) {
+		$log->error('Control dispatch Failed : ' . $request->getStatusText());
+		return;
+	} else {
+		return 1;
+	}
+
 }
 1;
 
