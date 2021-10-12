@@ -265,16 +265,16 @@ paths:
         - name: indexfrom
           in: query
           required: false
-          description: "An index to move from in the playliest"
+          description: "An index to move from in the playlist queue"
           schema:
             type: integer
         - name: indexto
           in: query
           required: false
-          description: "An index to move to in the playliest"
+          description: "An index to move to in the playlist queue"
           schema:
             type: integer
-      description: "Places the given playable into the players playlist in the position specified in action"
+      description: "Places the given playable into the players playlist queue in the position specified in action"
       tags:
         - Players
       responses:
