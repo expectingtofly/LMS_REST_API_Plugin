@@ -66,18 +66,33 @@ sub encodeSuccessJSON {
 
 
 sub executeControlDispatch {
-	my ($clientId, $verbArray) = @_;
+	my ($clientId, $verbArray, $resultToGet) = @_;
 
 	my $request = Slim::Control::Request->new($clientId, $verbArray);
-	$request->execute();
+	my $resp = $request->execute();
 	if ( $request->isStatusError() ) {
 		$log->error('Control dispatch Failed : ' . $request->getStatusText());
 		return;
 	} else {
-		return 1;
+		if ( $resultToGet ) {
+			return $request->getResult($resultToGet);
+		} else {
+			return 1;
+		}		
 	}
+}
+
+sub callbackError {
+	my ($callback, $errorText, $httpCode) = @_;
+
+	my $json = Plugins::RESTAPI::Utilities::encodeErrorMessageJSON($errorText);
+	$callback->($httpCode, $json);
+
+	return;	
 
 }
+
+
 1;
 
 
