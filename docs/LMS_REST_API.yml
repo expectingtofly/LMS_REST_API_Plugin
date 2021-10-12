@@ -36,7 +36,7 @@ components:
         type: string
         enum:
           - add
-          - insert
+          - next
           - delete
           - move
     appid:
@@ -46,6 +46,18 @@ components:
       description: "The ID of an app"
       schema:
         type: string
+    offset:
+      name: offset
+      in: query
+      description: Paginated results offset
+      schema:
+        type: integer
+    limit:
+      name: limit
+      in: query
+      description: Paginated results limit
+      schema:
+        type: integer
 paths:
   /browser:
     post:
@@ -232,6 +244,8 @@ paths:
     get:
       parameters:
         - "$ref": "#/components/parameters/playerid"
+        - "$ref": "#/components/parameters/offset"
+        - "$ref": "#/components/parameters/limit"
       tags:
         - Players
       description: "Get's the content of the current playlist for the player"
@@ -248,13 +262,19 @@ paths:
           schema:
             type: string
         - "$ref": "#/components/parameters/playlistaction"
-        - name: index
+        - name: indexfrom
           in: query
           required: false
-          description: "An index in a playlist"
+          description: "An index to move from in the playliest"
           schema:
             type: integer
-      description: "Places the given playable into the players playlist in the positin specified in action"
+        - name: indexto
+          in: query
+          required: false
+          description: "An index to move to in the playliest"
+          schema:
+            type: integer
+      description: "Places the given playable into the players playlist in the position specified in action"
       tags:
         - Players
       responses:

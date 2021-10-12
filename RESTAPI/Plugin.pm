@@ -38,14 +38,20 @@ my $log = Slim::Utils::Log->addLogCategory(
 my $router = Router::Simple->new();
 
 #set up route matching rules
-$router->connect( '/server', { controller => 'server', action => 'getDetails' }, {method => 'GET'} );
-$router->connect( '/server/status', { controller => 'server', action => 'setStatus' }, {method => 'POST'} );
+#implemented
 $router->connect( '/players', { controller => 'players', action => 'getPlayers' }, {method => 'GET'} );
 $router->connect( '/players/{playerid}', { controller => 'player', action => 'getDetails' }, {method => 'GET'} );
 $router->connect( '/players/{playerid}/status', { controller => 'player', action => 'getStatus' }, {method => 'GET'} );
 $router->connect( '/players/{playerid}/status', { controller => 'player', action => 'setStatus' }, {method => 'POST'} );
 $router->connect( '/players/{playerid}/play-status', { controller => 'player', action => 'getPlayStatus' }, {method => 'GET'} );
 $router->connect( '/players/{playerid}/play-status', { controller => 'player', action => 'setPlayStatus' }, {method => 'POST'} );
+$router->connect( '/players/{playerid}/queue', { controller => 'player', action => 'getQueue' }, {method => 'GET'} );
+$router->connect( '/players/{playerid}/queue', { controller => 'player', action => 'amendQueue' }, {method => 'PUT'} );
+
+#Not Implemented
+$router->connect( '/server', { controller => 'server', action => 'getDetails' }, {method => 'GET'} );
+$router->connect( '/server/status', { controller => 'server', action => 'setStatus' }, {method => 'POST'} );
+
 
 my %controllerMap = (
 	'players' => {
@@ -57,6 +63,8 @@ my %controllerMap = (
 		'setStatus' 		=> \&Plugins::RESTAPI::Controllers::Player::setStatus,
 		'getPlayStatus' 	=> \&Plugins::RESTAPI::Controllers::Player::getPlayStatus,
 		'setPlayStatus' 	=> \&Plugins::RESTAPI::Controllers::Player::setPlayStatus,
+		'getQueue'			=> \&Plugins::RESTAPI::Controllers::Player::getQueue,
+		'amendQueue'		=> \&Plugins::RESTAPI::Controllers::Player::amendQueue,
 	}
 
 );
@@ -100,7 +108,7 @@ sub handleRESTCall {
 			my $cb = sub {
 				my ($responseCode, $body) = @_;
 
-				Plugins::RESTAPI::Plugin::writeRESTResponse( $httpClient, $httpResponse, Plugins::RESTAPI::Utilities::HTTP_OK, $body );
+				Plugins::RESTAPI::Plugin::writeRESTResponse( $httpClient, $httpResponse, $responseCode, $body );
 			};
 
 			#call the controller operation
@@ -108,6 +116,7 @@ sub handleRESTCall {
 			if ($@) {
 
 				# The controller fell over for some unknown reason
+				$log->error("API Controller operation failed : $@");
 				my $json =  Plugins::RESTAPI::Utilities::encodeErrorMessageJSON('Internal System Error');
 				Plugins::RESTAPI::Plugin::writeRESTResponse($httpClient, $httpResponse, Plugins::RESTAPI::Utilities::HTTP_INTERNAL_SERVER_ERROR, $json );
 			}
